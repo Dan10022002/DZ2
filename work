@@ -1,0 +1,128 @@
+#include <iostream>
+#include <string>
+#include <vector>
+#include <ctype.h>
+#include <stack>
+
+int Priority(std::stack<char> sings)
+{
+    switch (sings.top())
+    {
+    case ')':
+    {
+        return -1;
+    }
+    case '(':
+    {
+        return 4;
+    }
+    case '+':
+    case '-':
+    {
+        return 1;
+    }
+    case '*':
+    case '/':
+    {
+        return 2;
+    }
+    case '^':
+    {
+        return 3;
+    }
+    }
+}
+
+int Priority(char simvol)
+{
+    switch (simvol)
+    {
+    case ')':
+    {
+        return -1;
+    }
+    case '(':
+    {
+        return 4;
+    }
+    case '+':
+    case '-':
+    {
+        return 1;
+    }
+    case '*':
+    case '/':
+    {
+        return 2;
+    }
+    case '^':
+    {
+        return 3;
+    }
+    }
+}
+
+std::vector <char> Exit(std::vector <char> exit, std::stack<char> signs, char simvol)
+{
+    if (isdigit(simvol) != 0)
+    {
+        exit.push_back(simvol);
+    }
+    else
+    {
+        if (signs.size() == 0)
+        {
+            signs.push(simvol);
+        }
+        else if (Priority(simvol) > Priority(signs))
+        {
+            signs.push(simvol);
+        }
+        else if (simvol == '(')
+        {
+            signs.push(simvol);
+        }
+        else if (signs.top() == '(')
+        {
+            signs.push(simvol);
+        }
+        else if (simvol == ')')
+        {
+            while (signs.top() != '(')
+            {
+                exit.push_back(signs.top());
+                signs.pop();
+            }
+            signs.pop();
+        }
+        else
+        {
+            exit.push_back(signs.top());
+            signs.pop();
+            signs.push(simvol);
+        }
+    }
+    return exit;
+}
+
+int main()
+{
+    std::stack<char> signs;
+    std::vector <char> exit;
+    std::string expression;
+    std::cout << "Enter your expression: ";
+    std::getline(std::cin, expression);
+    size_t expression_size = expression.length();
+    for (char h = 0; h < expression_size; h++)
+    {
+        char simvol;
+        simvol = expression[h];
+        Exit(exit, signs, simvol);
+
+    }
+    for (char h: exit)
+    {
+        std::cout << h << " ";
+    }
+    return 0;
+}
