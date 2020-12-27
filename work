@@ -97,9 +97,12 @@ std::vector <char> Exit(std::vector <char> exit, std::stack<char> signs, char si
         }
         else
         {
-            exit.push_back(signs.top());
-            signs.pop();
-            signs.push(simvol);
+            while (Priority(simvol) <= Priority(signs))
+            {
+                exit.push_back(signs.top());
+                signs.pop();
+                signs.push(simvol);
+            }
         }
     }
     return exit;
