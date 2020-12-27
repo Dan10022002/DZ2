@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <stack>
 
-int Priority(std::stack<char> sings)
+char Priority_stack(std::stack<char> sings)
 {
     switch (sings.top())
     {
@@ -25,7 +25,7 @@ int Priority(std::stack<char> sings)
     }
 }
 
-int Priority(char simvol)
+char Priority(char simvol)
 {
     switch (simvol)
     {
@@ -58,7 +58,7 @@ void Exit(std::vector <char> exit, std::stack<char> signs, char simvol)
         {
             signs.push(simvol);
         }
-        else if (Priority(simvol) > Priority(signs))
+        else if (Priority(simvol) > Priority_stack(signs))
         {
             signs.push(simvol);
         }
@@ -81,7 +81,7 @@ void Exit(std::vector <char> exit, std::stack<char> signs, char simvol)
         }
         else
         {
-            while (Priority(simvol) <= Priority(signs))
+            while (Priority(simvol) <= Priority_stack(signs))
             {
                 exit.push_back(signs.top());
                 signs.pop();
