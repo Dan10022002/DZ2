@@ -8,14 +8,6 @@ int Priority(std::stack<char> sings)
 {
     switch (sings.top())
     {
-    case ')':
-    {
-        return -1;
-    }
-    case '(':
-    {
-        return 4;
-    }
     case '+':
     case '-':
     {
@@ -37,14 +29,6 @@ int Priority(char simvol)
 {
     switch (simvol)
     {
-    case ')':
-    {
-        return -1;
-    }
-    case '(':
-    {
-        return 4;
-    }
     case '+':
     case '-':
     {
@@ -120,7 +104,14 @@ int main()
         char simvol;
         simvol = expression[h];
         Exit(exit, signs, simvol);
-
+        if (h == (expression_size - 1))
+        {
+            for (char h = 0; h < signs.size(); h++)
+            {
+                exit.push_back(signs.top());
+                signs.pop();
+            }
+        }
     }
     for (char h: exit)
     {
