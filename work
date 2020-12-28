@@ -85,8 +85,8 @@ void Exit(std::vector <char> exit, std::stack<char> signs, char simvol)
             {
                 exit.push_back(signs.top());
                 signs.pop();
-                signs.push(simvol);
             }
+            signs.push(simvol);
         }
     }
 }
