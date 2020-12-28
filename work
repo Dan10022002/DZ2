@@ -70,6 +70,7 @@ void Number_add(std::vector <double>& exit, std::vector <char>& number)
         }
     }
     exit.push_back(add_number);
+    number.clear();
 }
 
 void Function_add(std::string& function, std::vector <double>& exit, std::stack<char>& signs)
