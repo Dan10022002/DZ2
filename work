@@ -49,7 +49,7 @@ char Priority(char& simvol)
 
 void Number_add(std::vector <double>& exit, std::vector <char>& number)
 {
-    char index = 0;
+    char index = number.size();
     for (char h : number)
     {
         if (number[h] == '.')
