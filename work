@@ -3,6 +3,7 @@
 #include <vector>
 #include <ctype.h>
 #include <stack>
+#include <cmath>
 
 char Priority_stack(std::stack<char>& sings)
 {
@@ -46,12 +47,37 @@ char Priority(char& simvol)
     }
 }
 
-void Function_add(std::string& function, std::vector <char>& exit, std::stack<char>& signs)
+void Number_add(std::vector <double>& exit, std::vector <char>& number)
+{
+    char index = 0;
+    for (char h : number)
+    {
+        if (number[h] == '.')
+        {
+            index = h;
+        }
+    }
+    double add_number = 0;
+    for (char h : number)
+    {
+        if (h < index)
+        {
+            add_number += number[h] * pow(10, ((index - h) - 1));
+        }
+        if (h > index)
+        {
+            add_number += number[h] * pow(10, (index - h));
+        }
+    }
+    exit.push_back(add_number);
+}
+
+void Function_add(std::string& function, std::vector <double>& exit, std::stack<char>& signs)
 {
     if (function == "x")
     {
         std::cout << "Enter the x argument: ";
-        char x;
+        double x;
         std::cin >> x;
         exit.push_back(x);
     }
@@ -63,13 +89,25 @@ void Function_add(std::string& function, std::vector <char>& exit, std::stack<ch
     {
         exit.push_back('e');
     }
-    else if ((function == "sin") || (function == "tg") || (function == "cos") || (function == "ctg"))
+    else if (function == "sin")
     {
-
+        signs.push('s');
+    }
+    else if (function == "tg")
+    {
+        signs.push('T');
+    }
+    else if (function == "cos")
+    {
+        signs.push('c');
+    }
+    else if (function == "ctg")
+    {
+        signs.push('C'); // отличается регистром с косинусом, чтобы однозначно определить потом для калькулятора
     }
     else if (function == "sqrt")
     {
-
+        signs.push('S'); // отличается регистром с синусом, чтобы однозначно определить потом для калькулятора
     }
     else if (function == "exp")
     {
@@ -79,11 +117,11 @@ void Function_add(std::string& function, std::vector <char>& exit, std::stack<ch
     function.clear();
 }
 
-void Exit(std::vector <char>& exit, std::stack<char>& signs,std::string& function, char simvol)
+void Exit(std::vector <double>& exit, std::stack<char>& signs,std::string& function, std::vector <char>& number, char simvol)
 {
     if (isdigit(simvol) != 0) 
     {
-        exit.push_back(simvol);
+        number.push_back(simvol);
     }
     else
     {
@@ -93,37 +131,45 @@ void Exit(std::vector <char>& exit, std::stack<char>& signs,std::string& functio
         }
         else
         {
-            Function_add(function, exit, signs);
-            if (signs.size() == 0)
+            if (simvol == '.')
             {
-                signs.push(simvol);
-            }
-            else if (Priority(simvol) > Priority_stack(signs))
-            {
-                signs.push(simvol);
-            }
-            else if (simvol == '(')
-            {
-                signs.push(simvol);
-            }
-            else if (signs.top() == '(')
-            {
-                signs.push(simvol);
-            }
-            else if (simvol == ')')
-            {
-                while (signs.top() != '(')
-                {
-                    exit.push_back(signs.top());
-                    signs.pop();
-                }
-                signs.pop();
+                number.push_back(simvol);
             }
             else
             {
-                exit.push_back(signs.top());
-                signs.pop();
-                signs.push(simvol);
+                Number_add(exit, number);
+                Function_add(function, exit, signs);
+                if (signs.size() == 0)
+                {
+                    signs.push(simvol);
+                }
+                else if (Priority(simvol) > Priority_stack(signs))
+                {
+                    signs.push(simvol);
+                }
+                else if (simvol == '(')
+                {
+                    signs.push(simvol);
+                }
+                else if (signs.top() == '(')
+                {
+                    signs.push(simvol);
+                }
+                else if (simvol == ')')
+                {
+                    while (signs.top() != '(')
+                    {
+                        exit.push_back(signs.top());
+                        signs.pop();
+                    }
+                    signs.pop();
+                }
+                else
+                {
+                    exit.push_back(signs.top());
+                    signs.pop();
+                    signs.push(simvol);
+                }
             }
         }
     }
@@ -131,10 +177,10 @@ void Exit(std::vector <char>& exit, std::stack<char>& signs,std::string& functio
 
 int main()
 {
-    
+    std::vector <char> number;
     std::string function;
     std::stack<char> signs;
-    std::vector <char> exit;
+    std::vector <double> exit;
     std::string expression;
     std::cout << "Enter your expression: ";
     std::getline(std::cin, expression);
@@ -143,7 +189,7 @@ int main()
     {
         char simvol;
         simvol = expression[h];
-        Exit(exit, signs, function, simvol);
+        Exit(exit, signs, function, number, simvol);
         if (h == (expression_size - 1))
         {
             for (char h = 0; h < signs.size(); h++)
