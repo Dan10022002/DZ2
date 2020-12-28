@@ -138,8 +138,14 @@ void Exit(std::vector <double>& exit, std::stack<char>& signs,std::string& funct
             }
             else
             {
-                Number_add(exit, number);
-                Function_add(function, exit, signs);
+                if (number.size() != 0)
+                {
+                    Number_add(exit, number);
+                }
+                if (function.size() != 0)
+                {
+                    Function_add(function, exit, signs);
+                }
                 if (signs.size() == 0)
                 {
                     signs.push(simvol);
