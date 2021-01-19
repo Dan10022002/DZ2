@@ -4,6 +4,7 @@
 #include <stack>
 #include <ctype.h>
 #include <cmath>
+#include <algorithm>
 
 char Priority(char& simvol) //определение приорите для операций для обратной польской записи
 {
@@ -22,6 +23,10 @@ char Priority(char& simvol) //определение приорите для о�
     case '^':
     {
         return 3;
+    }
+    case '(':
+    {
+        return 0;
     }
     }
 }
@@ -79,7 +84,7 @@ void Function_add(std::string& exit, std::stack <char>& signs, std::string& s_fu
     s_function.clear();
 }
 
-void Exit(std::string& exit, std::string& number, std::stack <char>& signs, std::string& s_function, char simvol)
+void Exit(std::string& exit, std::string& number, std::stack <char>& signs, std::string& s_function, char simvol, int& check, char& last_simvol)
 {
     if (isdigit(simvol) != 0) // если цифра, то записывается в number - строка double числа (туда идёт и точка) - необходима для комплеткации числа в едино
     {
@@ -101,10 +106,18 @@ void Exit(std::string& exit, std::string& number, std::stack <char>& signs, std:
             {
                 if (number.length() != 0) // комплектация double числа, если number не пуст
                 {
-                    exit += number;
-                    number.clear();
-                    char probel = 32;
-                    exit += probel;
+                    unsigned int a = count(number.begin(), number.end(), '.');
+                    if (a > 1)
+                    {
+                        check += 1;
+                    }
+                    else
+                    {
+                        exit += number;
+                        number.clear();
+                        char probel = 32;
+                        exit += probel;
+                    }
                 }
                 if (s_function.length() != 0) // комплектация функции, если строка функция не пуста
                 {
@@ -112,12 +125,20 @@ void Exit(std::string& exit, std::string& number, std::stack <char>& signs, std:
                 }
                 if (signs.size() == 0) // если стек знаков пуст - добавление знака
                 {
+	if (isdigit(last_simvol) != 0)
+                    {
+                        signs.push('*');
+                    }
                     signs.push(simvol);
                 }
                 else
                 {
                     if (simvol == '(') // добавление открывающейся скобки в стек знаков (необходима для дальнейших операций)
                     {
+	    if (isdigit(last_simvol) != 0)
+                      {
+                        signs.push('*');
+                       }
                         signs.push(simvol);
                     }
                     else
@@ -312,22 +333,63 @@ int main()
     std::stack <char> signs; // стек знаков
     std::string s_function; // строка функций (считанные буквы)
     std::string expression; // само введённое пользователем выражение
+    int check = 0;
+    char last_simvol = 0;
     std::cout << "Enter your expression: ";
     std::getline(std::cin, expression);
     int expression_size = expression.length();
     for (int h = 0; h < expression_size; h++)
     {
+        if (check < 0)
+        {
+            std::cout << "\nUncorrect expression";
+            return 0;
+        }
+        else
+        {
+            if (expression[h] == '(')
+            {
+                check += 1;
+            }
+            if (expression[h] == ')')
+            {
+                check -= 1;
+            }
+        }
+    }
+    if (check != 0)
+    {
+        std::cout << "\nUncorrect expression";
+        return 0;
+    }
+    for (int h = 0; h < expression_size; h++)
+    {
         char simvol;
         simvol = expression[h]; // считывание символов
-        Exit(exit, number, signs, s_function, simvol); // обратная польская запись
+        Exit(exit, number, signs, s_function, simvol, check); // обратная польская запись
+        if (check != 0)
+        {
+            std::cout << "\nUncorrect expression";
+            return 0; 
+        }
+        last_simvol = expression[h];
         if (h == (expression_size - 1)) // комплектация всего, что осталось, так как в последний считанный символ не до конца было всё собрано 
         {
             if (number.length() != 0) // косплектация последнего double числа
             {
-                exit += number;
-                number.clear();
-                char probel = 32;
-                exit += probel;
+                unsigned int a = count(number.begin(), number.end(), '.');
+                if (a > 1)
+                {
+                    std::cout << "\nUncorrect expression";
+                    return 0;
+                }
+                else
+                {
+                    exit += number;
+                    number.clear();
+                    char probel = 32;
+                    exit += probel;
+                }
             }
             if (s_function.length() != 0) // косплектация последней функции
             {
